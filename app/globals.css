@@ -1,0 +1,112 @@
+@import "tailwindcss";
+
+body {
+  font-family: "Outfit", "sans-serif";
+  font-weight: 200;
+}
+/* Set mobile default (base 16px) */
+html {
+  font-size: 16px;
+}
+
+@media (min-width: 640px) {
+  /* Tailwind's sm breakpoint (640px) and above */
+  html {
+    font-size: 18px;
+  }
+}
+
+@theme {
+  --font-accent: "Baskervville", "serif";
+  --font-main: 200 "Outfit", "sans-serif";
+
+  /* Color tokens */
+  --color-white: #ffffff;
+  --color-brand-gray: #eaeaea;
+  --color-black: #3b3b3c;
+  --color-text-black: #222;
+  --color-brand-blue: #2f3b44;
+  --color-brand-teal: #98c4ba;
+  --color-brand-teal-faded: #98c4ba50;
+  --color-brand-red: #751a2b;
+}
+
+@layer utilities {
+  /* Font utilities */
+  .font-accent {
+    font-family: var(--font-accent);
+  }
+  .font-main {
+    font-family: var(--font-main);
+  }
+
+  /* Color utilities */
+  .text-white {
+    color: var(--color-white);
+  }
+  .text-brand-gray {
+    color: var(--color-brand-gray);
+  }
+  .text-black {
+    color: var(--color-black);
+  }
+  .text-brand-blue {
+    color: var(--color-brand-blue);
+  }
+  .text-brand-teal {
+    color: var(--color-brand-teal);
+  }
+  .text-brand-red {
+    color: var(--color-brand-red);
+  }
+
+  /* Background color utilities */
+  .bg-white {
+    background-color: var(--color-white);
+  }
+  .bg-brand-gray {
+    background-color: var(--color-brand-gray);
+  }
+  .bg-black {
+    background-color: var(--color-black);
+  }
+  .bg-brand-blue {
+    background-color: var(--color-brand-blue);
+  }
+  .bg-brand-teal {
+    background-color: var(--color-brand-teal);
+  }
+  .bg-brand-red {
+    background-color: var(--color-brand-red);
+  }
+}
+
+/* remove disabled time slots */
+.react-datepicker__time-list-item--disabled {
+  display: none;
+}
+
+.customDatePickerWidth,
+.customDatePickerWidth > div.react-datepicker-wrapper,
+.customDatePickerWidth
+  > div
+  > div.react-datepicker__input-container
+  .customDatePickerWidth
+  > div
+  > div.react-datepicker__input-container
+  input {
+  width: 100%;
+}
+
+/* Remove arrows from number input */
+/* For Chrome, Safari, Edge, Opera */
+.no-spinner::-webkit-outer-spin-button,
+.no-spinner::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* For Firefox */
+.no-spinner[type="number"] {
+  -moz-appearance: textfield;
+}
