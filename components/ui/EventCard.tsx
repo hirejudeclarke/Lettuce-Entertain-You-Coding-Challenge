@@ -6,7 +6,7 @@ import CtaButton from "./CtaButton";
 import Image from "next/image";
 
 // Enhanced parse function to handle <em> tags and truncate content
-const parseHtmlContent = (htmlContent, maxLength = 150) => {
+const parseHtmlContent = (htmlContent: string, maxLength = 150) => {
   if (!htmlContent) return null;
 
   // Handle both <a> and <em> tags
