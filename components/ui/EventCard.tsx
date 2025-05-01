@@ -24,7 +24,6 @@ const parseHtmlContent = (htmlContent: string, maxLength = 150) => {
   // Truncate the content if needed
   let totalLength = 0;
   let truncated = false;
-  const truncatedParts = [];
 
   // Check if content needs truncation
   const plainTextLength = htmlContent.replace(/<[^>]*>/g, "").length;

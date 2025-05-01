@@ -63,8 +63,8 @@ const About = () => {
             signature rolling wine cart.
           </p>
           <p>
-            While the favorites are here in abundance, there's always something
-            new when you're ready to fall in love all over again.
+            While the favorites are here in abundance, there&apos;s always
+            something new when you&apos;re ready to fall in love all over again.
           </p>
         </div>
       </div>

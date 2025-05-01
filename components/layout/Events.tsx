@@ -21,6 +21,24 @@ interface Event {
   permalink: string;
   title: string;
 }
+// Cleans the date string by removing ordinal suffixes
+const cleanDateString = (dateStr: string | null): string | null => {
+  if (!dateStr) return null;
+  // Removes ordinal suffixes like 1st, 2nd, 3rd, 4th, etc.
+  return dateStr.replace(/(\d+)(st|nd|rd|th)/g, "$1");
+};
+// Parses a date string into a Date object or returns null if invalid
+const parseEventDate = (dateStr: string | null): Date | null => {
+  if (!dateStr) return null;
+
+  const cleaned = cleanDateString(dateStr);
+  if (!cleaned) return null;
+
+  const parsed = new Date(cleaned);
+
+  // Check if the date is valid
+  return isNaN(parsed.getTime()) ? null : parsed;
+};
 
 const Events = () => {
   const [events, setEvents] = useState<Event[]>([]);
@@ -28,28 +46,8 @@ const Events = () => {
   const [cities, setCities] = useState<string[]>([]);
   const [selectedCity, setSelectedCity] = useState<string | null>(null);
 
-  // Cleans the date string by removing ordinal suffixes
-  function cleanDateString(dateStr: string | null): string | null {
-    if (!dateStr) return null;
-    // Removes ordinal suffixes like 1st, 2nd, 3rd, 4th, etc.
-    return dateStr.replace(/(\d+)(st|nd|rd|th)/g, "$1");
-  }
-
-  // Parses a date string into a Date object or returns null if invalid
-  function parseEventDate(dateStr: string | null): Date | null {
-    if (!dateStr) return null;
-
-    const cleaned = cleanDateString(dateStr);
-    if (!cleaned) return null;
-
-    const parsed = new Date(cleaned);
-
-    // Check if the date is valid
-    return isNaN(parsed.getTime()) ? null : parsed;
-  }
-
   // Format date for display or return a placeholder for invalid dates
-  function formatDateForDisplay(dateStr: string | null): string {
+  const formatDateForDisplay = (dateStr: string | null): string => {
     if (!dateStr) return "Ongoing";
 
     const parsedDate = parseEventDate(dateStr);
@@ -60,10 +58,10 @@ const Events = () => {
       month: "long",
       day: "numeric",
     });
-  }
+  };
 
   useEffect(() => {
-    async function fetchEvents() {
+    const fetchEvents = async () => {
       try {
         const { data } = await axios.get<Event[]>(
           "https://abarestaurants-staging-401581158498.us-central1.run.app/wp-json/lettuce/events"
@@ -71,33 +69,24 @@ const Events = () => {
 
         const now = new Date();
 
-        // Process each event to validate dates
-        const processedEvents = data.map((event) => ({
-          ...event,
-          parsedDate: parseEventDate(event.date),
-        }));
-
-        // Events with a valid date and in the future
-        const upcomingEvents = processedEvents
-          .filter((event) => event.parsedDate && event.parsedDate >= now)
+        const upcomingEvents = data
+          .filter((event) => {
+            const parsed = parseEventDate(event.date);
+            return parsed && parsed >= now;
+          })
           .sort((a, b) => {
-            // We already know these dates are valid from the filter
-            return a.parsedDate!.getTime() - b.parsedDate!.getTime();
+            const aDate = parseEventDate(a.date);
+            const bDate = parseEventDate(b.date);
+
+            return (aDate?.getTime() ?? 0) - (bDate?.getTime() ?? 0);
           });
 
-        // Events without a valid date
-        const undatedEvents = processedEvents.filter(
-          (event) => !event.parsedDate
-        );
+        const undatedEvents = data.filter((event) => {
+          const parsed = parseEventDate(event.date);
+          return !parsed;
+        });
 
-        // Final list: upcoming first, then undated
-        const allSortedEvents = [...upcomingEvents, ...undatedEvents].map(
-          (event) => {
-            // Remove the temporary parsedDate property before setting state
-            const { parsedDate, ...originalEvent } = event;
-            return originalEvent;
-          }
-        );
+        const allSortedEvents = [...upcomingEvents, ...undatedEvents];
 
         setEvents(allSortedEvents);
         setFilteredEvents(allSortedEvents);
@@ -111,12 +100,12 @@ const Events = () => {
       } catch (error) {
         console.error("Error fetching events:", error);
       }
-    }
+    };
 
     fetchEvents();
   }, []);
 
-  function handleCityFilter(city: string | null) {
+  const handleCityFilter = (city: string | null) => {
     setSelectedCity(city);
 
     if (!city) {
@@ -127,7 +116,7 @@ const Events = () => {
       );
       setFilteredEvents(filtered);
     }
-  }
+  };
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-12">

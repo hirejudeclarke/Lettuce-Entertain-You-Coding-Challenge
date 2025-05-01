@@ -111,45 +111,45 @@ const Reservation = () => {
     return { startTime, endTime };
   };
 
-  const generateTimeSlots = (date: Date) => {
-    if (!date || !location?.hours) return [];
-
-    const dayOfWeek = date.getDay(); // 0 = Sunday, 1 = Monday, etc.
-    const relevantHours = location.hours.filter(({ days }) => {
-      return (
-        (days.includes("Mon-Thu") && dayOfWeek >= 1 && dayOfWeek <= 4) ||
-        (days.includes("Fri-Sat") && (dayOfWeek === 5 || dayOfWeek === 6)) ||
-        (days === "Sunday" && dayOfWeek === 0) ||
-        (days === "Sun Brunch" && dayOfWeek === 0)
-      );
-    });
-
-    if (relevantHours.length === 0) return [];
-
-    const allSlots: Date[] = [];
-
-    for (const hourSet of relevantHours) {
-      const { startTime, endTime } = parseTimeString(hourSet.time, date);
-      const currentSlot = new Date(startTime);
-      const lastSlot = new Date(endTime);
-      lastSlot.setHours(lastSlot.getHours() - 1); // Optional buffer before closing
-
-      while (currentSlot <= lastSlot) {
-        allSlots.push(new Date(currentSlot));
-        currentSlot.setMinutes(currentSlot.getMinutes() + 30);
-      }
-    }
-
-    // Remove duplicate slots (same time)
-    const uniqueSlots = Array.from(
-      new Map(allSlots.map((slot) => [slot.getTime(), slot])).values()
-    );
-
-    return uniqueSlots.sort((a, b) => a.getTime() - b.getTime());
-  };
-
   // Update available time slots when the selected date changes
   useEffect(() => {
+    const generateTimeSlots = (date: Date) => {
+      if (!date || !location?.hours) return [];
+
+      const dayOfWeek = date.getDay(); // 0 = Sunday, 1 = Monday, etc.
+      const relevantHours = location.hours.filter(({ days }) => {
+        return (
+          (days.includes("Mon-Thu") && dayOfWeek >= 1 && dayOfWeek <= 4) ||
+          (days.includes("Fri-Sat") && (dayOfWeek === 5 || dayOfWeek === 6)) ||
+          (days === "Sunday" && dayOfWeek === 0) ||
+          (days === "Sun Brunch" && dayOfWeek === 0)
+        );
+      });
+
+      if (relevantHours.length === 0) return [];
+
+      const allSlots: Date[] = [];
+
+      for (const hourSet of relevantHours) {
+        const { startTime, endTime } = parseTimeString(hourSet.time, date);
+        const currentSlot = new Date(startTime);
+        const lastSlot = new Date(endTime);
+        lastSlot.setHours(lastSlot.getHours() - 1); // Optional buffer before closing
+
+        while (currentSlot <= lastSlot) {
+          allSlots.push(new Date(currentSlot));
+          currentSlot.setMinutes(currentSlot.getMinutes() + 30);
+        }
+      }
+
+      // Remove duplicate slots (same time)
+      const uniqueSlots = Array.from(
+        new Map(allSlots.map((slot) => [slot.getTime(), slot])).values()
+      );
+
+      return uniqueSlots.sort((a, b) => a.getTime() - b.getTime());
+    };
+
     if (selectedDate) {
       const slots = generateTimeSlots(selectedDate);
       setAvailableTimeSlots(slots);
