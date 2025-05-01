@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import type { Configuration } from 'webpack';
 
 const nextConfig: NextConfig = {
   images: {
@@ -10,7 +11,7 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  webpackDevMiddleware: config => {
+  webpackDevMiddleware: (config: Configuration) => {
     config.watchOptions = {
       poll: 1000,
       aggregateTimeout: 300,
