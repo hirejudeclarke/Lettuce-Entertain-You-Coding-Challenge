@@ -2,22 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-
-interface NavLink {
-  name: string;
-  url: string;
-}
-
-const links: NavLink[] = [
-  { name: "Reservations", url: "https://judeclarke.com/" },
-  { name: "Menu", url: "https://judeclarke.com/" },
-  { name: "Events", url: "https://judeclarke.com/" },
-  { name: "Private Parties", url: "https://judeclarke.com/" },
-  { name: "Pick Up", url: "https://judeclarke.com/" },
-  { name: "Delivery", url: "https://judeclarke.com/" },
-  { name: "Contact Us", url: "https://judeclarke.com/" },
-  { name: "Gallery", url: "https://judeclarke.com/" },
-];
+import { navLinks } from "@/data/links";
 
 const Navbar = () => {
   return (
@@ -25,7 +10,7 @@ const Navbar = () => {
       {/* Desktop links */}
       <div className="w-full justify-center hidden lg:flex">
         <div className="w-11/12 flex justify-center gap-[4%]">
-          {links.map((link, index) => (
+          {navLinks.map((link, index) => (
             <Link
               key={index}
               href={link.url}

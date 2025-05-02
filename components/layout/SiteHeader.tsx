@@ -6,23 +6,12 @@ import { TiThMenu } from "react-icons/ti";
 import { IoClose } from "react-icons/io5";
 import { useState } from "react";
 import Link from "next/link";
+import { navLinks } from "@/data/links";
 import SocialLinks from "../ui/SocialLinks";
 
 const SiteHeader = () => {
   const { location, updateLocation } = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-
-  // Links from Navbar for mobile menu
-  const links = [
-    { name: "Reservations", url: "https://judeclarke.com/" },
-    { name: "Menu", url: "https://judeclarke.com/" },
-    { name: "Events", url: "https://judeclarke.com/" },
-    { name: "Private Parties", url: "https://judeclarke.com/" },
-    { name: "Pick Up", url: "https://judeclarke.com/" },
-    { name: "Delivery", url: "https://judeclarke.com/" },
-    { name: "Contact Us", url: "https://judeclarke.com/" },
-    { name: "Gallery", url: "https://judeclarke.com/" },
-  ];
 
   // Function to handle the change of location
   const handleLocationChange = () => {
@@ -88,7 +77,7 @@ const SiteHeader = () => {
           </div>
 
           {/* Navigation links */}
-          {links.map((link, index) => (
+          {navLinks.map((link, index) => (
             <Link
               key={index}
               href={link.url}

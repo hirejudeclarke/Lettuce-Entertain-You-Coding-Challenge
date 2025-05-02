@@ -3,62 +3,15 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import EventCard from "../ui/EventCard";
-
-interface FeaturedImage {
-  url: string;
-  alt_text: string;
-}
-
-interface Event {
-  ID: string;
-  cities: string[];
-  content: string;
-  created_at: string;
-  cta_btn: string;
-  cta_url: string;
-  date: string | null;
-  featured_image: FeaturedImage;
-  permalink: string;
-  title: string;
-}
-// Cleans the date string by removing ordinal suffixes
-const cleanDateString = (dateStr: string | null): string | null => {
-  if (!dateStr) return null;
-  // Removes ordinal suffixes like 1st, 2nd, 3rd, 4th, etc.
-  return dateStr.replace(/(\d+)(st|nd|rd|th)/g, "$1");
-};
-// Parses a date string into a Date object or returns null if invalid
-const parseEventDate = (dateStr: string | null): Date | null => {
-  if (!dateStr) return null;
-
-  const cleaned = cleanDateString(dateStr);
-  if (!cleaned) return null;
-
-  const parsed = new Date(cleaned);
-
-  // Check if the date is valid
-  return isNaN(parsed.getTime()) ? null : parsed;
-};
+import { parseEventDate } from "@/utilities";
+import { Event, getCurrentEvents } from "@/utilities";
+import { formatDateForDisplay } from "@/utilities";
 
 const Events = () => {
   const [events, setEvents] = useState<Event[]>([]);
   const [filteredEvents, setFilteredEvents] = useState<Event[]>([]);
   const [cities, setCities] = useState<string[]>([]);
   const [selectedCity, setSelectedCity] = useState<string | null>(null);
-
-  // Format date for display or return a placeholder for invalid dates
-  const formatDateForDisplay = (dateStr: string | null): string => {
-    if (!dateStr) return "Ongoing";
-
-    const parsedDate = parseEventDate(dateStr);
-    if (!parsedDate) return "Check website for dates";
-
-    return parsedDate.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  };
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -67,19 +20,7 @@ const Events = () => {
           "https://abarestaurants-staging-401581158498.us-central1.run.app/wp-json/lettuce/events"
         );
 
-        const now = new Date();
-
-        const upcomingEvents = data
-          .filter((event) => {
-            const parsed = parseEventDate(event.date);
-            return parsed && parsed >= now;
-          })
-          .sort((a, b) => {
-            const aDate = parseEventDate(a.date);
-            const bDate = parseEventDate(b.date);
-
-            return (aDate?.getTime() ?? 0) - (bDate?.getTime() ?? 0);
-          });
+        const upcomingEvents = getCurrentEvents(data);
 
         const undatedEvents = data.filter((event) => {
           const parsed = parseEventDate(event.date);

@@ -5,6 +5,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import CtaButton from "../ui/CtaButton";
 import { useLocation } from "@/contexts/location.context";
+import { parseTimeString, generateTimeSlots } from "@/utilities";
 
 const Reservation = () => {
   const partySizeRef = useRef<HTMLInputElement>(null);
@@ -50,7 +51,7 @@ const Reservation = () => {
       } has been made for ${formattedDate} at ${formattedTime}.`
     );
 
-    console.log({
+    console.log("Your Reservation: ", {
       partySize,
       selectedDate,
       selectedTime,
@@ -82,76 +83,10 @@ const Reservation = () => {
     year: "numeric",
   });
 
-  // Parse time string from "4:00pm - 9:30pm" format to create Date objects
-  const parseTimeString = (timeString: string, date: Date) => {
-    const [startTimeStr, endTimeStr] = timeString.split(" - ");
-
-    const createTimeDate = (timeStr: string, baseDate: Date) => {
-      const isPM = timeStr.toLowerCase().includes("pm");
-      const time = timeStr
-        .toLowerCase()
-        .replace("am", "")
-        .replace("pm", "")
-        .trim();
-      const [hours, minutes] = time.split(":").map((num) => parseInt(num));
-
-      const newDate = new Date(baseDate);
-      newDate.setHours(
-        isPM && hours !== 12 ? hours + 12 : hours === 12 && !isPM ? 0 : hours,
-        minutes,
-        0,
-        0
-      );
-      return newDate;
-    };
-
-    const startTime = createTimeDate(startTimeStr, date);
-    const endTime = createTimeDate(endTimeStr, date);
-
-    return { startTime, endTime };
-  };
-
   // Update available time slots when the selected date changes
   useEffect(() => {
-    const generateTimeSlots = (date: Date) => {
-      if (!date || !location?.hours) return [];
-
-      const dayOfWeek = date.getDay(); // 0 = Sunday, 1 = Monday, etc.
-      const relevantHours = location.hours.filter(({ days }) => {
-        return (
-          (days.includes("Mon-Thu") && dayOfWeek >= 1 && dayOfWeek <= 4) ||
-          (days.includes("Fri-Sat") && (dayOfWeek === 5 || dayOfWeek === 6)) ||
-          (days === "Sunday" && dayOfWeek === 0) ||
-          (days === "Sun Brunch" && dayOfWeek === 0)
-        );
-      });
-
-      if (relevantHours.length === 0) return [];
-
-      const allSlots: Date[] = [];
-
-      for (const hourSet of relevantHours) {
-        const { startTime, endTime } = parseTimeString(hourSet.time, date);
-        const currentSlot = new Date(startTime);
-        const lastSlot = new Date(endTime);
-        lastSlot.setHours(lastSlot.getHours() - 1); // Optional buffer before closing
-
-        while (currentSlot <= lastSlot) {
-          allSlots.push(new Date(currentSlot));
-          currentSlot.setMinutes(currentSlot.getMinutes() + 30);
-        }
-      }
-
-      // Remove duplicate slots (same time)
-      const uniqueSlots = Array.from(
-        new Map(allSlots.map((slot) => [slot.getTime(), slot])).values()
-      );
-
-      return uniqueSlots.sort((a, b) => a.getTime() - b.getTime());
-    };
-
     if (selectedDate) {
-      const slots = generateTimeSlots(selectedDate);
+      const slots = generateTimeSlots(selectedDate, location);
       setAvailableTimeSlots(slots);
       setSelectedTime(null); // Reset selected time when date changes
     }
