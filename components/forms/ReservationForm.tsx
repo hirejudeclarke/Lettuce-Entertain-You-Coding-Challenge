@@ -5,7 +5,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import CtaButton from "../ui/CtaButton";
 import { useLocation } from "@/contexts/location.context";
-import { parseTimeString, generateTimeSlots } from "@/utilities";
+import { generateTimeSlots } from "@/utilities";
 
 const Reservation = () => {
   const partySizeRef = useRef<HTMLInputElement>(null);
